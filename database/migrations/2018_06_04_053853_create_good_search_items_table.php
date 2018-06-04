@@ -42,7 +42,7 @@ class CreateGoodSearchItemsTable extends Migration
             $table->string('bodies_list');   // Типы кузовов представление
             $table->unsignedBigInteger('bodies')->default(0);  // Типы кузовов (битовая гребенка)
             // Внешние ключи
-            $table->foreign('good_id')->references('id')->on('goods');
+            $table->foreign('good_id')->references('id')->on('goods')->onDelete('cascade');
         });
     }
 
