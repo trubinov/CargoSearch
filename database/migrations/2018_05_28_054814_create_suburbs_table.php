@@ -16,8 +16,10 @@ class CreateSuburbsTable extends Migration
         Schema::create('suburbs', function (Blueprint $table) {
             $table->uuid('id');
             $table->unsignedTinyInteger('kind');
-            $table->string('city_code');
-            $table->string('city_name');
+            $table->string('code');
+            $table->string('name');
+            $table->double('latitude');    // Широта
+            $table->double('longitude');   // Долгота
             $table->unsignedInteger('good_id');
             $table->primary('id');
             $table->foreign('good_id')->references('id')->on('goods')->onDelete('cascade');

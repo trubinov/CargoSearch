@@ -83,14 +83,6 @@ class Good extends Model
         'constantly' => 'boolean',
         'circle' => 'boolean',
         'direct_contract' => 'boolean',
-        /*
-        'load_date' => 'date:d.m.Y',
-        'load_date_to' => 'date:d.m.Y',
-        'loading_time_from' => 'time:H:i:s',
-        'loading_time_to' => 'time:H:i:s',
-        'unloading_time_from' => 'time:H:i:s',
-        'unloading_time_to' => 'time:H:i:s',
-        */
     ];
 
     protected $dates = ['deleted_at'];
@@ -103,6 +95,11 @@ class Good extends Model
     public function suburbs()
     {
         return $this->hasMany(Suburb::class);
+    }
+
+    public function searchItems()
+    {
+        return $this->hasMany(GoodSearchItem::class);
     }
 
     public function setLoadingLateralAttribute($value)

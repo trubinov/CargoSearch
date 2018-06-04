@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Body;
 use App\Good;
+use App\GoodSearchItem;
+use App\Http\Resources\GoodSearchItemResource;
 use App\Suburb;
 use App\Waypoint;
 use Carbon\Carbon;
@@ -120,12 +122,16 @@ class GoodsController extends Controller
         'comment' => 'string|nullable',
         'direct_contract' => 'boolean',
         'waypoints.*.kind' => 'required|numeric',
-        'waypoints.*.city_code' => 'required|string',
-        'waypoints.*.city_name' => 'required|string',
+        'waypoints.*.code' => 'required|string',
+        'waypoints.*.name' => 'required|string',
+        'waypoints.*.latitude' => 'required|numeric',
+        'waypoints.*.longitude' => 'required|numeric',
         'waypoints.*.address' => 'string|nullable',
         'suburbs.*.kind' => 'required|numeric',
-        'suburbs.*.city_code' => 'required|string',
-        'suburbs.*.city_name' => 'required|string'
+        'suburbs.*.code' => 'required|string',
+        'suburbs.*.name' => 'required|string',
+        'suburbs.*.latitude' => 'required|numeric',
+        'suburbs.*.longitude' => 'required|numeric',
     ];
 
     protected $sort_fields = [
@@ -155,7 +161,7 @@ class GoodsController extends Controller
      */
     public function index()
     {
-        return Response::create(["total" => Good::all('id')->count()]);
+        return Response::create(["total" => GoodSearchItem::all('id')->count()]);
     }
 
     /**
@@ -212,7 +218,7 @@ class GoodsController extends Controller
      */
     public function destroy($id)
     {
-        if (Good::destroy($id) > 0)
+        if (GoodSearchItem::where('good_id', '=', $id)->delete() > 0)
             return Response::create('OK');
         return Response::create('Failed');
     }
@@ -227,7 +233,7 @@ class GoodsController extends Controller
     {
         $request->validate($this->search_validation_rules);
         $load_date_from = $this->getDateTimeField($request, 'load_date', 'd.m.Y')->startOfDay();
-        $goods_query = Good::query();
+        $goods_query = GoodSearchItem::with('good');
         $goods_query->where(function (Builder $query) use ($load_date_from) {
             $query->where('load_date', '>=', $load_date_from)->orWhere('load_date_to', '>=', $load_date_from);
         });
@@ -298,13 +304,13 @@ class GoodsController extends Controller
             $goods_query->whereIn('form_pay', $form_pay_list);
         $starred_goods = $request->get('starred');
         if (is_array($starred_goods)) {
-            $goods_query->whereIn('id', $starred_goods);
+            $goods_query->whereIn('good_id', $starred_goods);
         }
         $sort = $request->get('sort');
         if (!is_null($sort) && array_key_exists($sort, $this->sort_fields)) {
             $goods_query->orderBy($this->sort_fields[$sort][0], $this->sort_fields[$sort][1]);
         }
-        return Response::create($goods_query->paginate());
+        return GoodSearchItemResource::collection($goods_query->paginate());
     }
 
     /**
@@ -328,7 +334,6 @@ class GoodsController extends Controller
      */
     protected function fillGoodByRequest(Good $good, Request $request)
     {
-
         $good->fill($request->all($good->getFillable()));
         // dates
         $good->load_date = $this->getDateTimeField($request, 'load_date', 'd.m.Y');
@@ -354,7 +359,7 @@ class GoodsController extends Controller
         // append suburbs
         $suburbs = [];
         foreach ($request->get('suburbs', []) as $item) {
-            $item['id'] = uniqid();
+            $item['id'] = uniqid('', true);
             $suburbs[] = new Suburb($item);
         }
         $good->suburbs()->delete();
@@ -362,11 +367,34 @@ class GoodsController extends Controller
         // append waypoints
         $waypoints = [];
         foreach ($request->get('waypoints', []) as $item) {
-            $item['id'] = uniqid();
+            $item['id'] = uniqid('', true);
             $waypoints[] = new Waypoint($item);
         }
         $good->waypoints()->delete();
         $good->waypoints()->saveMany($waypoints);
+        // create or refresh GoodSearchItem
+        $search_items = [];
+        $search_item = new GoodSearchItem($good->attributesToArray());
+        $search_item->id = uniqid('', true);
+        $search_items[] = $search_item;
+        foreach ($good->suburbs as $suburb) {
+            $search_item = new GoodSearchItem($good->attributesToArray());
+            $search_item->id = uniqid('', true);
+            if ($suburb->kind == 1) {
+                $search_item->loading_city_code = $suburb->code;
+                $search_item->loading_city_name = $suburb->name;
+                $search_item->loading_city_latitude = $suburb->latitude;
+                $search_item->loading_city_longitude = $suburb->longitude;
+            } elseif ($suburb->kind == 2) {
+                $search_item->unloading_city_code = $suburb->code;
+                $search_item->unloading_city_name = $suburb->name;
+                $search_item->unloading_city_latitude = $suburb->latitude;
+                $search_item->unloading_city_longitude = $suburb->longitude;
+            }
+            $search_items[] = $search_item;
+        }
+        $good->searchItems()->delete();
+        $good->searchItems()->saveMany($search_items);
         return $good;
     }
 

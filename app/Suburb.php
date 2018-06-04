@@ -11,6 +11,6 @@ class Suburb extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['id', 'kind', 'city_code', 'city_name', 'good_id'];
+    protected $fillable = ['id', 'kind', 'code', 'name', 'latitude', 'longitude', 'good_id'];
 
 }

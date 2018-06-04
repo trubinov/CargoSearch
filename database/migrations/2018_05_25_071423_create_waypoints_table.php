@@ -16,8 +16,10 @@ class CreateWaypointsTable extends Migration
         Schema::create('waypoints', function (Blueprint $table) {
             $table->uuid('id');
             $table->unsignedTinyInteger('kind');
-            $table->string('city_code');
-            $table->string('city_name');
+            $table->string('code');
+            $table->string('name');
+            $table->double('latitude');    // Широта
+            $table->double('longitude');   // Долгота
             $table->string('address')->nullable();
             $table->unsignedInteger('good_id');
             $table->primary('id');
