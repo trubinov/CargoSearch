@@ -17,6 +17,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+/* Resource Route for total search information */
+Route::get('info', 'API\InfoController@index')->name('info.index');
+
 /* Resource Route for Body table */
 Route::apiResource('bodies', 'API\BodyController')->only(['index']);
 
