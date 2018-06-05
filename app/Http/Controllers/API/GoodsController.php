@@ -63,7 +63,7 @@ class GoodsController extends Controller
         'organization_inn' => 'required',
         'manager' => 'required',
         'manager_contacts' => 'required',
-        'manager_icq' => 'string',
+        'manager_icq' => 'string|nullable',
         'manager1' => 'string|nullable',
         'manager1_contacts' => 'string|nullable',
         'manager1_icq' => 'string|nullable',
