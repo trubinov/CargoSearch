@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use function PHPSTORM_META\type;
 
 class GoodsController extends Controller
 {
@@ -305,6 +308,16 @@ class GoodsController extends Controller
         $starred_goods = $request->get('starred');
         if (is_array($starred_goods)) {
             $goods_query->whereIn('good_id', $starred_goods);
+        }
+        $subscriber_ranking = $request->get('subscriber_ranking');
+        if (!is_null($subscriber_ranking)) {
+            DB::unprepared(DB::raw('DROP TEMPORARY TABLE IF EXISTS `subscriber_ranking`'));
+            DB::insert(DB::raw('CREATE TEMPORARY TABLE `subscriber_ranking`(`s_id` VARCHAR(10), `rank` SMALLINT) ENGINE = MEMORY'));
+            foreach ($subscriber_ranking as $subscriber_id => $rank)
+                DB::table('subscriber_ranking')->insert(['s_id' => $subscriber_id, 'rank' => $rank]);
+            $goods_query->leftJoin('subscriber_ranking',
+                'good_search_items.subscriber_id', '=', 'subscriber_ranking.s_id');
+            $goods_query->orderByDesc('rank');
         }
         $sort = $request->get('sort');
         if (!is_null($sort) && array_key_exists($sort, $this->sort_fields)) {

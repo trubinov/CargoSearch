@@ -33,6 +33,7 @@ class GoodSearchItemResource extends JsonResource
             'manager_work_phone' => $this->good->manager_work_phone,
             'manager_contacts' => $this->good->manager_contacts,
             'manager_icq' => $this->good->manager_icq,
+            'rank' => $this->rank ?: 0,
         ];
     }
 }
