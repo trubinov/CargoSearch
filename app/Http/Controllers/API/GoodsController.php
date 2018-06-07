@@ -14,8 +14,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use function PHPSTORM_META\type;
 
 class GoodsController extends Controller
 {
