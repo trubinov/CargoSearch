@@ -43,7 +43,7 @@ class TrucksController extends Controller
      */
     public function index()
     {
-        return Response::create(Truck::all()->count());
+        return Response::create(['total' => TruckSearchItem::all()->count()]);
     }
 
     /**
