@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Body;
 use App\Truck;
+use App\TruckSearchItem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
@@ -18,7 +21,7 @@ class TrucksController extends Controller
         'city_latitude' => 'numeric',
         'city_longitude' => 'numeric',
         'city_name2' => 'string|nullable',
-        'body_type' => 'numeric',
+        'body_type' => 'string',
         'weight' => 'numeric',
         'volume' => 'numeric',
         'organization' => 'string',
@@ -51,7 +54,10 @@ class TrucksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, $this->validation_rules);
+        $truck = new Truck();
+        $this->fillTruckByRequest($truck, $request);
+        return Response::create($truck);
     }
 
     /**
@@ -74,7 +80,10 @@ class TrucksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, $this->validation_rules);
+        $truck = Truck::findOrFail($id);
+        $this->fillTruckByRequest($truck, $request);
+        return Response::create($truck);
     }
 
     /**
@@ -85,6 +94,24 @@ class TrucksController extends Controller
      */
     public function destroy($id)
     {
-        return Response::create('OK');
+        if (TruckSearchItem::where('truck_id', '=', $id)->delete() > 0)
+            return Response::create('OK');
+        return Response::create('Failed');
     }
+
+    protected function fillTruckByRequest(Truck $truck, Request $request)
+    {
+        $truck->fill($request->all($truck->getFillable()));
+        // dates
+        $truck->available_date = Carbon::createFromFormat('d.m.Y', $request->available_date);
+        $truck->body_type = Body::findOrCreate($request->body_type)->id;
+        $truck->save();
+        $search_item = new TruckSearchItem($truck->attributesToArray());
+        $search_item->id = uniqid('', true);
+        $search_items = [$search_item];
+        $truck->searchItems()->delete();
+        $truck->searchItems()->saveMany($search_items);
+        return $truck;
+    }
+
 }
