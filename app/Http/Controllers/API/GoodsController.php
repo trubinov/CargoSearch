@@ -225,6 +225,21 @@ class GoodsController extends Controller
     }
 
     /**
+     * Remove GoodSearchItem by good_uid
+     * @param $good_uid
+     * @return \Illuminate\Http\Response
+     */
+    public function delete($good_uid)
+    {
+        $good = Good::where('good_uid', '=', $good_uid)->first();
+        if (!is_null($good)) {
+            if (GoodSearchItem::where('good_id', '=', $good->id)->delete() > 0)
+                return Response::create('OK');
+        }
+        return Response::create('Failed');
+    }
+
+    /**
      * Search Goods
      *
      * @param \Illuminate\Http\Request $request

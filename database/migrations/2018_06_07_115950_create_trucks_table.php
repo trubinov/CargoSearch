@@ -17,6 +17,7 @@ class CreateTrucksTable extends Migration
             $table->increments('id');
             $table->timestamps();
             $table->softDeletes();
+            $table->uuid('doc_uid')->unique();
             $table->string('subscriber_id');
             $table->date('available_date'); // Предполагаемая дата, когда машина освобождается
             $table->string('city_code');
@@ -29,9 +30,13 @@ class CreateTrucksTable extends Migration
             $table->float('volume');
             $table->string('organization');
             $table->string('organization_inn');
+            $table->string('organization_contacts');
             $table->string('manager');
             $table->string('manager_icq');
-            $table->string('phones');
+            $table->string('manager_contacts');
+            $table->string('manager_work_phone')->nullable();
+            $table->string('driver_name');
+            $table->string('truck_num');
         });
     }
 

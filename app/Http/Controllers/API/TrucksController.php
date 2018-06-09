@@ -13,7 +13,12 @@ use Illuminate\Http\Response;
 class TrucksController extends Controller
 {
 
+    protected $search_validation_rules = [
+
+    ];
+
     protected $validation_rules = [
+        'doc_uid' => 'required|string|size:36',
         'subscriber_id' => 'string',
         'available_date' => 'date_format:d.m.Y',
         'city_code' => 'string',
@@ -26,9 +31,13 @@ class TrucksController extends Controller
         'volume' => 'numeric',
         'organization' => 'string',
         'organization_inn' => 'string',
+        'organization_contacts' => 'string',
         'manager' => 'string',
         'manager_icq' => 'string',
-        'phones' => 'string',
+        'manager_contacts' => 'string',
+        'manager_work_phone' => 'string|nullable',
+        'driver_name' => 'string',
+        'truck_num' => 'string',
     ];
 
     public function __construct()
@@ -55,9 +64,14 @@ class TrucksController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, $this->validation_rules);
-        $truck = new Truck();
-        $this->fillTruckByRequest($truck, $request);
-        return Response::create($truck);
+        $truck = Truck::where('doc_uid', '=', $request->get('doc_uid'))->first();
+        if (is_null($truck)) {
+            $truck = new Truck();
+            $this->fillTruckByRequest($truck, $request);
+            return Response::create($truck);
+        } else {
+            return $this->update($request, $truck->id);
+        }
     }
 
     /**
@@ -97,6 +111,33 @@ class TrucksController extends Controller
         if (TruckSearchItem::where('truck_id', '=', $id)->delete() > 0)
             return Response::create('OK');
         return Response::create('Failed');
+    }
+
+    /**
+     * Remove TruckItemSearch by doc_uid
+     * @param string $doc_uid
+     * @return \Illuminate\Http\Response
+     */
+    public function delete($doc_uid)
+    {
+        $truck = Truck::where('doc_uid', '=', $doc_uid)->first();
+        if (!is_null($truck)) {
+            if (TruckSearchItem::where('truck_id', '=', $truck->id)->delete() > 0)
+                return Response::create('OK');
+        }
+        return Response::create('Failed');
+    }
+
+    /**
+     * Search Trucks
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $this->validate($request, $this->search_validation_rules);
+        return Response::create('OK');
     }
 
     protected function fillTruckByRequest(Truck $truck, Request $request)

@@ -26,3 +26,9 @@ Route::apiResource('bodies', 'API\BodyController')->only(['index']);
 /* Resource Route for Goods table */
 Route::apiResources(['goods' => 'API\GoodsController']);
 Route::post('goods/search', 'API\GoodsController@search')->name('goods.search');
+Route::delete('goods/{good_uid}/delete', 'API\GoodsController@delete')->name('goods.delete');
+
+/* Resource Route for Trucks table */
+Route::apiResources(['trucks' => 'API\TrucksController']);
+Route::post('trucks/search', 'API\TrucksController@search')->name('trucks.search');
+Route::delete('trucks/{doc_uid}/delete', 'API\TrucksController@delete')->name('trucks.delete');
