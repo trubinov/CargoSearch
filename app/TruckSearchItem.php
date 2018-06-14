@@ -11,7 +11,8 @@ class TruckSearchItem extends Model
 
     protected $fillable = [
         'subscriber_id', 'available_date', 'body_type', 'weight', 'volume',
-        'city_code', 'city_name', 'city_latitude', 'city_longitude'
+        'city_code', 'city_name', 'city_latitude', 'city_longitude',
+        'organization',
     ];
 
     public function truck()

@@ -26,6 +26,7 @@ class CreateTruckSearchItemsTable extends Migration
             $table->unsignedInteger('body_type');
             $table->float('weight');
             $table->float('volume');
+            $table->string('organization');
             // Внешние ключи
             $table->foreign('truck_id')->references('id')->on('trucks')->onDelete('cascade');
         });

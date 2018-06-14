@@ -25,9 +25,13 @@ class CreateTrucksTable extends Migration
             $table->double('city_latitude');
             $table->double('city_longitude');
             $table->string('city_name2')->nullable();
+            $table->string('body_type_name');
             $table->unsignedInteger('body_type');
             $table->float('weight');
             $table->float('volume');
+            $table->float('length')->nullable();
+            $table->float('width')->nullable();
+            $table->float('height')->nullable();
             $table->string('organization');
             $table->string('organization_inn');
             $table->string('organization_contacts');

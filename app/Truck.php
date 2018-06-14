@@ -12,7 +12,8 @@ class Truck extends Model
 
     protected $fillable = [
         'doc_uid', 'subscriber_id', 'city_code', 'city_name', 'city_latitude', 'city_longitude', 'city_name2',
-        'weight', 'volume', 'organization', 'organization_inn', 'organization_contacts',
+        'body_type_name', 'weight', 'volume', 'length', 'width', 'height',
+        'organization', 'organization_inn', 'organization_contacts',
         'manager', 'manager_icq', 'manager_contacts', 'manager_work_phone', 'driver_name', 'truck_num',
     ];
 
