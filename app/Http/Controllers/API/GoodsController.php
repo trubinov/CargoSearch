@@ -253,6 +253,10 @@ class GoodsController extends Controller
         $goods_query->where(function (Builder $query) use ($load_date_from) {
             $query->where('load_date', '>=', $load_date_from)->orWhere('load_date_to', '>=', $load_date_from);
         });
+        $starred_goods = $request->get('starred');
+        if (is_array($starred_goods)) {
+            $goods_query->whereIn('good_id', $starred_goods);
+        }
         $loading_radius = $request->get('loading_radius');
         if (!is_null($loading_radius)) {
             $loading_lat = $request->get('loading_latitude');
@@ -318,10 +322,6 @@ class GoodsController extends Controller
             $form_pay_list[] = 2;
         if (count($form_pay_list) > 0)
             $goods_query->whereIn('form_pay', $form_pay_list);
-        $starred_goods = $request->get('starred');
-        if (is_array($starred_goods)) {
-            $goods_query->whereIn('good_id', $starred_goods);
-        }
         $subscriber_ranking = $request->get('subscriber_ranking');
         if (!is_null($subscriber_ranking)) {
             DB::unprepared(DB::raw('DROP TEMPORARY TABLE IF EXISTS `subscriber_ranking`'));
