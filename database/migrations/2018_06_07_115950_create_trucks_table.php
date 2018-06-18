@@ -36,7 +36,7 @@ class CreateTrucksTable extends Migration
             $table->string('organization_inn');
             $table->string('organization_contacts');
             $table->string('manager');
-            $table->string('manager_icq');
+            $table->string('manager_icq')->nullable();
             $table->string('manager_contacts');
             $table->string('manager_work_phone')->nullable();
             $table->string('driver_name');
