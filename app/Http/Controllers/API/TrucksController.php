@@ -47,7 +47,7 @@ class TrucksController extends Controller
         'organization_inn' => 'string',
         'organization_contacts' => 'string',
         'manager' => 'string',
-        'manager_icq' => 'string',
+        'manager_icq' => 'string|nullable',
         'manager_contacts' => 'string',
         'manager_work_phone' => 'string|nullable',
         'driver_name' => 'string',
