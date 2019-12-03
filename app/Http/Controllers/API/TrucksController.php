@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Body;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\TruckSearchItemResource;
 use App\Truck;
 use App\TruckSearchItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
@@ -169,8 +169,13 @@ class TrucksController extends Controller
         if (is_array($bodies)) {
             $body_ids = [];
             foreach ($bodies as $body_name) {
-                $body = Body::findOrCreate($body_name);
-                $body_ids[] = $body->id;
+                $awning_bodies = Body::checkAwning($body_name);
+                if (count($awning_bodies) > 0) {
+                    $body_ids += $awning_bodies;
+                } else {
+                    $body = Body::findOrCreate($body_name);
+                    $body_ids[] = $body->id;
+                }
             }
             if (count($body_ids) > 0) {
                 $truck_query->whereIn('body_type', $body_ids);

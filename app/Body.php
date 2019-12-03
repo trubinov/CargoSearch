@@ -12,7 +12,26 @@ use Illuminate\Support\Str;
 class Body extends Model
 {
 
+    /**
+     * Заглушка для тента
+     */
+    const AWNING_IDS = [3, 15, 19, 23, 25, 36, 72, 86];
+
     public $timestamps = false;
+
+    /**
+     * Заглушка для тента
+     *
+     * @param string $name
+     * @return array
+     */
+    public static function checkAwning($name)
+    {
+        $name = Str::lower(trim($name));
+        if (Str::startsWith($name, 'тент'))
+            return self::AWNING_IDS;
+        return [];
+    }
 
     /**
      * Find Body by name or create new
