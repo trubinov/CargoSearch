@@ -28,6 +28,7 @@ class TruckSearchItemResource extends JsonResource
             'width' => $this->truck->width,
             'height' => $this->truck->height,
             'organization' => $this->truck->organization,
+            'organization_inn' => $this->truck->organization_inn,
             'manager' => $this->truck->manager,
             'manager_work_phone' => $this->truck->manager_work_phone,
             'manager_contacts' => $this->truck->manager_contacts,
